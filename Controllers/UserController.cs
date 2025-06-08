@@ -4,6 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 [Route("api/[controller]")]
 public class UserController : ControllerBase
 {
+    [HttpGet("get/{id}")] // http://localhost:5131/api/user/get/number (number - это id)
+    public IActionResult GetUser(int id)
+    {
+        if(id <= 0)
+            return BadRequest("Id is invalid");
+
+        return Ok($"User id: {id} succefuly returned"); // получение user-a
+    }
     [HttpPost("register")] // http://localhost:5131/api/user/register
     public IActionResult RegisterUser([FromBody] UserRequest request)
     {
