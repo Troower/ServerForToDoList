@@ -1,6 +1,12 @@
 var builder = WebApplication.CreateBuilder(args);
+
+// Добавление сервисов API
+builder.Services.AddControllers();  
+
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello!");
+
+app.MapControllers();  // Для MVC-контроллеров
+
 
 app.Run();
