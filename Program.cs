@@ -1,8 +1,12 @@
+using Microsoft.EntityFrameworkCore;
+using ServerForToDoList.DBContext;
+
 var builder = WebApplication.CreateBuilder(args);
-
-// Добавление сервисов API
-builder.Services.AddControllers();  
-
+builder.Services.AddDbContext<ToDoContext>(options =>
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        new MySqlServerVersion(new Version(8, 0, 21)) // Укажите вашу версию MySQL
+    ));
 var app = builder.Build();
 
 
