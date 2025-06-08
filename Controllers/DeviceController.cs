@@ -12,7 +12,7 @@ public class DeviceController : ControllerBase
 
         return Ok($"Device: {request.Device}, with token: {request.Token} succefuly registered"); // регистрация токена
     }
-    [HttpPut("update-token")] // http://localhost:5131/api/device/register
+    [HttpPut("update-token")] // http://localhost:5131/api/device/update-token
     public IActionResult update_token([FromBody] DeviceRequest request)
     {
         if (string.IsNullOrEmpty(request.Token))
