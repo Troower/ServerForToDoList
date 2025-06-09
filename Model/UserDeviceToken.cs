@@ -7,9 +7,11 @@ namespace ServerForToDoList.Model
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Column("token_id")]
         public int TokenId { get; set; }
 
         [Required]
+        [Column("user_id")]
         public int UserId { get; set; }
 
         [ForeignKey("UserId")]
@@ -17,13 +19,17 @@ namespace ServerForToDoList.Model
 
         [Required]
         [StringLength(255)]
+        [Column("device_token")]
         public string DeviceToken { get; set; }
 
         [StringLength(50)]
-        public string DeviceType { get; set; }
+        [Column("device_type")]
+        public string? DeviceType { get; set; }
 
+        [Column("created_at")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+        [Column("updated_at")]
         public DateTime? UpdatedAt { get; set; }
     }
 }

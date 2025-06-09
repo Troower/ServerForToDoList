@@ -1,15 +1,37 @@
 using Microsoft.AspNetCore.Mvc;
+using ServerForToDoList.DBContext;
+using ServerForToDoList.Repositories;
+using System.Text;
 
 [ApiController]
 [Route("api/[controller]")]
 public class UserController : ControllerBase
 {
+    // ороче, в program.cs задаетс€ контекст Ѕƒ, и он, как € пон€л автоматически встраиваетс€ в контроллы. Ќо что бы им пользоватьс€ его надо €вно объ€вить
+    private readonly ToDoContext _context;
+
+    public UserController(ToDoContext context)
+    {
+        _context = context;
+    }
+
+
     [HttpGet("get/{id}")] // http://localhost:5131/api/user/get/number (number - это id)
-    public IActionResult GetUser(int id)
+    public async Task<IActionResult> GetUserAsync(int id)//!!!!!!!!!!!!!!Ќужно  все методы в контролах сделать асинхронными !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     {
         if(id <= 0)
             return BadRequest("Id is invalid");
-
+        //ѕолучение всех пользователей в консоль к примеру.
+        //var userList = await UserRepository.GetUsersAsync(_context);
+        //var users = new StringBuilder();
+        //if (userList != null)
+        //{
+        //    foreach (var user in userList)
+        //    {
+        //        users.AppendLine($"{user.FirstName} {user.LastName} {user.Surname}");
+        //    }
+        //}
+        //Console.WriteLine(users.ToString());
         return Ok($"User id: {id} succefuly returned"); // получение user-a
     }
     [HttpPost("register")] // http://localhost:5131/api/user/register
@@ -45,7 +67,7 @@ public class UserController : ControllerBase
     }
 }
 
-public class UserRequest // json отправл€ть в соответствии с пордком полей в классе и своответствии с названи€ми полей в классе
+public class UserRequest // json отправл€ть в соответствии с пор€дком полей в классе и своответствии с названи€ми полей в классе
 {
     public int id { get; set; }
     public string? lastName { get; set; }
