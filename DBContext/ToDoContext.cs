@@ -47,12 +47,24 @@ namespace ServerForToDoList.DBContext
 
             // Конфигурация для TaskAssignment
             modelBuilder.Entity<TaskAssignment>()
-                .HasIndex(ta => new { ta.TaskId, ta.UserId })
-                .IsUnique();
+                .HasOne(ta => ta.Task)
+                .WithMany(t => t.Assignments)
+                .HasForeignKey(ta => ta.TaskId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<TaskAssignment>()
-                .HasIndex(ta => ta.UserId)
-                .HasDatabaseName("idx_task_assignments_user_id");
+                .HasOne(ta => ta.User)
+                .WithMany(u => u.Assignments) // Связь только с одним навигационным свойством
+                .HasForeignKey(ta => ta.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<TaskAssignment>()
+                .HasOne(ta => ta.Assigner)
+                .WithMany() // Без навигационного свойства в User
+                .HasForeignKey(ta => ta.AssignedBy)
+                .OnDelete(DeleteBehavior.SetNull);
+
+
 
             // Конфигурация для TaskType
             modelBuilder.Entity<TaskType>()
