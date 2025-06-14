@@ -2,12 +2,14 @@ using Microsoft.AspNetCore.Mvc;
 using ServerForToDoList.DBContext;
 using ServerForToDoList.Repositories;
 using System.Text;
+using System.Text.Json.Serialization;
+
 
 [ApiController]
 [Route("api/[controller]")]
 public class UserController : ControllerBase
 {
-    //Короче, в program.cs задается контекст БД, и он, как я понял автоматически встраивается в контроллы. Но что бы им пользоваться его надо явно объявить
+    //ГЉГ®Г°Г®Г·ГҐ, Гў program.cs Г§Г Г¤Г ГҐГІГ±Гї ГЄГ®Г­ГІГҐГЄГ±ГІ ГЃГ„, ГЁ Г®Г­, ГЄГ ГЄ Гї ГЇГ®Г­ГїГ« Г ГўГІГ®Г¬Г ГІГЁГ·ГҐГ±ГЄГЁ ГўГ±ГІГ°Г ГЁГўГ ГҐГІГ±Гї Гў ГЄГ®Г­ГІГ°Г®Г«Г«Г». ГЌГ® Г·ГІГ® ГЎГ» ГЁГ¬ ГЇГ®Г«ГјГ§Г®ГўГ ГІГјГ±Гї ГҐГЈГ® Г­Г Г¤Г® ГїГўГ­Г® Г®ГЎГєГїГўГЁГІГј
     private readonly ToDoContext _context;
 
     public UserController(ToDoContext context)
@@ -16,12 +18,12 @@ public class UserController : ControllerBase
     }
 
 
-    [HttpGet("get/{id}")] // http://localhost:5131/api/user/get/number (number - это id)
-    public async Task<IActionResult> GetUserAsync(int id)//!!!!!!!!!!!!!!Нужно  все методы в контролах сделать асинхронными !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    [HttpGet("get/{id}")] // http://localhost:5131/api/user/get/number (number - ГЅГІГ® id)
+    public async Task<IActionResult> GetUserAsync(int id)//!!!!!!!!!!!!!!ГЌГіГ¦Г­Г®  ГўГ±ГҐ Г¬ГҐГІГ®Г¤Г» Гў ГЄГ®Г­ГІГ°Г®Г«Г Гµ Г±Г¤ГҐГ«Г ГІГј Г Г±ГЁГ­ГµГ°Г®Г­Г­Г»Г¬ГЁ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     {
         if(id <= 0)
             return BadRequest("Id is invalid");
-        //Получение всех пользователей в консоль к примеру.
+        //ГЏГ®Г«ГіГ·ГҐГ­ГЁГҐ ГўГ±ГҐГµ ГЇГ®Г«ГјГ§Г®ГўГ ГІГҐГ«ГҐГ© Гў ГЄГ®Г­Г±Г®Г«Гј ГЄ ГЇГ°ГЁГ¬ГҐГ°Гі.
         //var userList = await UserRepository.GetUsersAsync(_context);
         //var users = new StringBuilder();
         //if (userList != null)
@@ -32,16 +34,44 @@ public class UserController : ControllerBase
         //    }
         //}
         //Console.WriteLine(users.ToString());
-        return Ok($"User id: {id} succefuly returned"); // получение user-a
+        return Ok($"User id: {id} succefuly returned"); // ГЇГ®Г«ГіГ·ГҐГ­ГЁГҐ user-a
     }
-   
+
+    [HttpGet("getAll")] // http://localhost:5131/api/user/getAll 
+    public IActionResult GetAllUser()
+    {
+        try 
+        {
+            // Г‹Г®ГЈГЁГЄГ  ГЇГ®Г«ГіГ·ГҐГ­ГЁГї ГЇГ®Г«ГјГ§Г®ГўГ ГІГҐГ«ГҐГ©
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest("An unknown error occurred");
+        }
+    }
+    [HttpPost("register")] // http://localhost:5131/api/user/register
+    public IActionResult RegisterUser([FromBody] List<UserRequest> requests) // Г°ГҐГЈГЁГ±ГІГ°Г Г¶ГЁГї ГЇГ®Г«ГјГ§Г®ГўГ ГІГҐГ«Гї (json Г®ГІГЇГ°Г ГўГ«ГїГІГј Гў ГўГЁГ¤ГҐ Г¬Г Г±Г±ГЁГўГ  Г¤Г Г¦ГҐ ГҐГ±Г«ГЁ Г®Г¤ГЁГ­ ГЅГ«ГҐГ¬ГҐГ­ГІ)
+    {
+        if (requests == null || !requests.Any())
+            return BadRequest("No users provided");
+
+        
+        var response = new List<string>();
+        foreach (var request in requests)
+        {
+            response.Add($"User {request.lastName} {request.firstName} registered");
+        }
+
+        return Ok(response);
+    }
     [HttpPut("update")] // http://localhost:5131/api/user/update
     public IActionResult update_user([FromBody] UserRequest request)
     {
         if (request == null)
             return BadRequest("Error accepting data, data is null");
 
-        return Ok($"User: {request.lastName} {request.firstName} {request.surname} succefuly updated"); // обнавление user-a
+        return Ok($"User: {request.lastName} {request.firstName} {request.surname} succefuly updated"); // Г®ГЎГ­Г®ГўГ«ГҐГ­ГЁГҐ user-a
     }
     [HttpDelete("delete")] // http://localhost:5131/api/user/delete
     public IActionResult delete_user([FromBody] UserRequest request)
@@ -49,18 +79,26 @@ public class UserController : ControllerBase
         if (request == null)
             return BadRequest("Error accepting data, data is null");
 
-        return Ok($"User: {request.lastName} {request.firstName} {request.surname} succefuly deleted"); // удаление user-a
+        return Ok($"User: {request.lastName} {request.firstName} {request.surname} succefuly deleted"); // ГіГ¤Г Г«ГҐГ­ГЁГҐ user-a
     }
 }
 
-public class UserRequest // json отправлять в соответствии с порядком полей в классе и своответствии с названиями полей в классе
+public class UserRequest // json Г®ГІГЇГ°Г ГўГ«ГїГІГј Гў Г±Г®Г®ГІГўГҐГІГ±ГІГўГЁГЁ Г± ГЇГ®Г°Г¤ГЄГ®Г¬ ГЇГ®Г«ГҐГ© Гў ГЄГ«Г Г±Г±ГҐ
 {
+    [JsonPropertyName("user_id")]
     public int id { get; set; }
+    [JsonPropertyName("last_name")]
     public string? lastName { get; set; }
+    [JsonPropertyName("first_name")]
     public string firstName { get; set; }
+    [JsonPropertyName("surname")]
     public string surname { get; set; }
+    [JsonPropertyName("login")]
     public string login { get; set; }
+    [JsonPropertyName("password_hash")]
     public string password { get; set; }
+    [JsonPropertyName("role")]
     public string role { get; set; }
+    [JsonPropertyName("created_by")]
     public int? createdBy { get; set; }
 }
