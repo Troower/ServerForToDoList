@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  todolist-db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: ToDoList
+      MYSQL_USER: todoappuser
+      MYSQL_PASSWORD: secretpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d 
+    networks:
+      - todo-network
+  aspnet-server:
+    build:
+      context: .
+      dockerfile: Dockerfile 
+    ports:
+      - "5131:5131" # проброс порта контейнера на хост
+    depends_on:
+      - todolist-db
+    environment:
+      - ConnectionStrings__DefaultConnection=server=todolist-db;port=3306;database=ToDoList;user=root;password=rootpassword
+    networks:
+      - todo-network
+
+networks:
+  todo-network:
+
+volumes:
+  mysql-data:

@@ -43,7 +43,7 @@ namespace ServerForToDoList.Controllers
 
                 if (task == null)
                 {
-                    return NotFound($"Задача с ID {id} не найдена");
+                    return NotFound($"Task with ID \"{id}\" not found");
                 }
 
                 var taskDto = Extensions.TaskExtensions.ToDto(task);
@@ -51,7 +51,7 @@ namespace ServerForToDoList.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Произошла внутренняя ошибка сервера");
+                return StatusCode(500, "internal server error");
             }
         }
 
@@ -68,7 +68,7 @@ namespace ServerForToDoList.Controllers
                 var userExists = await _context.Users.AnyAsync(u => u.UserId == int.Parse(userId.ToString()));
                 if (!userExists)
                 {
-                    return NotFound($"Пользователь с ID {userId.ToString()} не найден");
+                    return NotFound($"User with ID \"{userId}\" not found");
                 }
 
                 var tasks = await _context.Tasks
@@ -81,7 +81,7 @@ namespace ServerForToDoList.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Внутренняя ошибка сервера");
+                return StatusCode(500, "internal server error");
             }
         }
 
@@ -95,7 +95,7 @@ namespace ServerForToDoList.Controllers
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (userId == null) throw new Exception();
                 var userExists = await _context.Users.AnyAsync(u => u.UserId == int.Parse(userId.ToString()));
-                if (!userExists) return NotFound($"Пользователь с ID {userId} не найден");
+                if (!userExists) return NotFound($"User with ID \"{userId}\" not found");
 
                 var tasks = await _context.TaskAssignments
                 .Where(ta => ta.UserId == int.Parse(userId.ToString()))
@@ -113,7 +113,7 @@ namespace ServerForToDoList.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Внутренняя ошибка сервера");
+                return StatusCode(500, "internal server error");
             }
         }
 
@@ -126,7 +126,7 @@ namespace ServerForToDoList.Controllers
             {
                 if (userId == null) throw new Exception();
                 var userExists = await _context.Users.AnyAsync(u => u.UserId == int.Parse(userId.ToString()));
-                if (!userExists) return NotFound($"Пользователь с ID {userId} не найден");
+                if (!userExists) return NotFound($"User with ID \"{userId}\" not found");
 
                 var tasks = await _context.TaskAssignments
                 .Where(ta => ta.UserId == int.Parse(userId.ToString()))
@@ -137,14 +137,13 @@ namespace ServerForToDoList.Controllers
                 .OrderByDescending(t => t.CreatedAt)
                 .ToListAsync();
 
-
                 var result = tasks.Select(t => Extensions.TaskExtensions.ToDto(t)).ToList();
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Внутренняя ошибка сервера");
+                return StatusCode(500, "internal server error");
             }
         }
 
@@ -160,8 +159,6 @@ namespace ServerForToDoList.Controllers
                     return BadRequest(ModelState);
                 }
 
-                
-
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
                 Model.Task task = Extensions.TaskExtensions.ToEntity(jsTask);
@@ -170,15 +167,11 @@ namespace ServerForToDoList.Controllers
                 task.CreatedAt = DateTime.UtcNow;
                 if (task.Assignments != null)
                 {
-
-
                     foreach (var assignment in task.Assignments)
                     {
                         assignment.AssignedAt = DateTime.UtcNow;
                         assignment.AssignedBy = int.Parse(userIdClaim);
                     }
-
-
                 }
                 await _context.Tasks.AddAsync(task);
                 await _context.SaveChangesAsync();
@@ -189,7 +182,7 @@ namespace ServerForToDoList.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-                return StatusCode(500, "Произошла внутренняя ошибка сервера");
+                return StatusCode(500, "internal server error");
             }
         }
 
@@ -235,17 +228,17 @@ namespace ServerForToDoList.Controllers
             }
             catch (DbUpdateException ex)
             {
-                return StatusCode(500, "Номер ошибки " + ex.Message);
+                return StatusCode(500, "Error number " + ex.Message);
             }
             catch (TokenResponseException ex)
             {
                 _logger.LogError(ex.ToString());
-                return StatusCode(500, "Произошла внутренняя ошибка сервера: " + ex);
+                return StatusCode(500, "internal server error: " + ex);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.ToString());
-                return StatusCode(500, "Произошла внутренняя ошибка сервера");
+                return StatusCode(500, "internal server error");
             }
         }
 
@@ -261,11 +254,11 @@ namespace ServerForToDoList.Controllers
                                  .FirstOrDefaultAsync(t => t.TaskId == taskId);
                 if (task == null)
                 {
-                    return NotFound($"Задача с ID {taskId} не найдена.");
+                    return NotFound($"Task with ID \"{taskId}\" not found");
                 }
                 if (task.CompletedAt!=null&&task.IsConfirmed)
                 {
-                    return BadRequest("Задача уже выполненна");
+                    return BadRequest("The task has already been completed");
                 }
                 task.IsConfirmed = flag;
                 await _context.SaveChangesAsync();
@@ -274,11 +267,11 @@ namespace ServerForToDoList.Controllers
             }
             catch (DbUpdateException ex)
             {
-                return StatusCode(500, "Номер ошибки" + " " + ex.Message);
+                return StatusCode(500, "Error number " + ex.Message);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Произошла внутренняя ошибка сервера");
+                return StatusCode(500, "internal server error");
             }
         }
 
@@ -306,7 +299,7 @@ namespace ServerForToDoList.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Произошла внутренняя ошибка сервера");
+                return StatusCode(500, "internal server error");
             }
         }
 
@@ -329,7 +322,7 @@ namespace ServerForToDoList.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Произошла внутренняя ошибка сервера");
+                return StatusCode(500, "internal server error");
             }
         }
     }

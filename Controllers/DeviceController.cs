@@ -39,6 +39,7 @@ public class DeviceController : ControllerBase
             return StatusCode(500, "Произошла внутреняя ошибка сервера");
         }
     }
+    
     [HttpDelete("delete-by-user")] // http://localhost:5131/api/device/delete-by-user
     public async Task<IActionResult> delete_token([FromBody] int id)
     {
@@ -67,17 +68,21 @@ public class DeviceController : ControllerBase
                 return BadRequest("Token is required");
 
             var deletingToken = _context.UserDeviceTokens.Where(w => w.DeviceToken == request.Token).Select(t => t);
-
-            foreach (var delete in deletingToken)
+            if (deletingToken.Count() != 0)
             {
-                _context.UserDeviceTokens.Remove(delete);
+                foreach (var delete in deletingToken)
+                {
+                    _context.UserDeviceTokens.Remove(delete);
+                }
+                _context.SaveChanges();
+                return Ok($"Token succefuly deleted"); // удаление токена
             }
-            _context.SaveChanges();
-            return Ok($"Token succefuly deleted"); // удаление токена
+            else
+                return Ok("already up-to-date");
         }
         catch (Exception ex)
         {
-            return StatusCode(500, "Произошла внутренняя ошибка сервера");
+            return StatusCode(500, "internal server error");
         }
     }
 

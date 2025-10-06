@@ -70,7 +70,7 @@ public class AuthController : ControllerBase
             if (user == null)
             {
                 _logger.LogWarning($"Попытка входа с несуществующим логином: {request.login}");
-                var mes = new { Message = "Неверные учетные данные" };
+                var mes = new { Message = "Incorrect credentials" };
                 return Unauthorized(mes);
             }
 
@@ -81,7 +81,7 @@ public class AuthController : ControllerBase
             if (!BCrypt.Net.BCrypt.Verify(request.password, user.PasswordHash))
             {
                 _logger.LogWarning($"Неверный пароль для пользователя: {request.login}");
-                return Unauthorized(new { Message = "Неверные учетные данные" });
+                return Unauthorized(new { Message = "Incorrect credentials" });
             }
 
             var token = GenerateJwtToken(user);
@@ -104,7 +104,7 @@ public class AuthController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Ошибка при авторизации");
-            return StatusCode(500, new { Message = "Внутренняя ошибка сервера" });
+            return StatusCode(500, new { Message = "internal server error" });
         }
     }
 

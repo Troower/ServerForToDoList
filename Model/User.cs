@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ServerForToDoList.Model
 {
+    [Table("users")]
     public class User
     {
         [Key]

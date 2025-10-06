@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace ServerForToDoList.Model
 {
+    [Table("tasks")]
     public class Task
     {
         [Key]

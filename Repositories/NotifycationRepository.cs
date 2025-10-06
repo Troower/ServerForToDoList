@@ -31,17 +31,22 @@ namespace ServerForToDoList.Repositories
 
         public static async System.Threading.Tasks.Task NotifyForUserUpdateTask(Model.Task Task, ToDoContext _context, FcmNotificationService notificationService)
         {
-
-            var userId = _context.TaskAssignments.Where(t => t.TaskId == Task.TaskId).Select(t => t.UserId).ToList();
-            var deviceTokens = await _context.UserDeviceTokens
-                 .Where(u => userId.Contains(u.UserId))
-                 .Select(u => u.DeviceToken)
-                 .ToListAsync();
-            foreach (var token in deviceTokens)
+            try
             {
-                await notificationService.SendNotificationAsync(token, "Задача обновленна", $"Задача : \"{Task.Title}\" обновленна.");
+                var userId = _context.TaskAssignments.Where(t => t.TaskId == Task.TaskId).Select(t => t.UserId).ToList();
+                var deviceTokens = await _context.UserDeviceTokens
+                     .Where(u => userId.Contains(u.UserId))
+                     .Select(u => u.DeviceToken)
+                     .ToListAsync();
+                foreach (var token in deviceTokens)
+                {
+                    await notificationService.SendNotificationAsync(token, "Задача обновленна", $"Задача : \"{Task.Title}\" обновленна.");
+                }
             }
-
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
         }
 
         public static async System.Threading.Tasks.Task NotifyForUserConfirmTask(Model.Task task, ToDoContext _context, FcmNotificationService notificationService)
@@ -70,6 +75,7 @@ namespace ServerForToDoList.Repositories
 
         public static async System.Threading.Tasks.Task NotifyConfirmTask(Model.Task task, bool Flag, ToDoContext _context, FcmNotificationService notificationService)
         {
+            try { 
             if (Flag)
             {
                 var userIds = _context.TaskAssignments.Where(t => t.TaskId == task.TaskId).Select(u => u.UserId).ToList();
@@ -91,16 +97,26 @@ namespace ServerForToDoList.Repositories
                     notificationService.SendNotificationAsync(token, "Задача не прошла проверку", $"Задача \"{task.Title}\" возвращена в работу");
                 }
             }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
         }
 
         public static async System.Threading.Tasks.Task NotifyDeleteTask(Model.Task task, ToDoContext _context, FcmNotificationService notificationService)
         {
-
+            try { 
             var userIds = _context.TaskAssignments.Where(t => t.TaskId == task.TaskId).Select(u => u.UserId).ToList();
             var deviceTokens = _context.UserDeviceTokens.Where(t => userIds.Contains(t.UserId)).Select(u => u.DeviceToken).ToList();
             foreach (var token in deviceTokens)
             {
                 notificationService.SendNotificationAsync(token, "Задача удаленна", $"Задача \"{task.Title}\" удаленна");
+            }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
 
         }

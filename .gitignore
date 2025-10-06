@@ -73,7 +73,7 @@ StyleCopReport.xml
 *_i.c
 *_p.c
 *_h.h
-*.ilk
+*.ilkfirebase-adminsdk.json
 *.meta
 *.obj
 *.iobj
@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# FCM - token
+firebase-adminsdk.json

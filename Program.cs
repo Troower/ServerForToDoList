@@ -11,6 +11,13 @@ using Google.Apis.Auth.OAuth2;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(System.Text.Unicode.UnicodeRanges.All);
+    });
+
+
 builder.Services.AddDbContext<ToDoContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),

@@ -18,11 +18,18 @@ namespace ServerForToDoList.Controllers
         [HttpGet]
         public IActionResult GetHelp()
         {
-            var filePath = Path.Combine(_env.ContentRootPath, "Help", "Guide.html");
-            if (!System.IO.File.Exists(filePath))
-                return NotFound("Справка не найдена");
+            try
+            {
+                var filePath = Path.Combine(_env.ContentRootPath, "Help", "Guide.html");
+                if (!System.IO.File.Exists(filePath))
+                    return NotFound("Справка не найдена");
 
-            return PhysicalFile(filePath, "text/html");
+                return PhysicalFile(filePath, "text/html");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "internal server error");
+            }
         }
     }
 }

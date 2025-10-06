@@ -39,24 +39,31 @@ namespace ServerForToDoList.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] string typeName)
         {
-            if (string.IsNullOrWhiteSpace(typeName))
-                return BadRequest("Название типа обязательно");
-
-            string normalized = typeName.Trim().ToLower();
-            bool exists = await _context.TaskTypes
-                .AnyAsync(t => t.TypeName.Trim().ToLower() == normalized);
-
-            if (exists)
-                return Conflict("Тип задачи уже существует");
-
-            _context.TaskTypes.Add(new TaskType
+            try
             {
-                TypeName = typeName.Trim(),
-                IsAccessible = true
-            });
+                if (string.IsNullOrWhiteSpace(typeName))
+                    return BadRequest("Название типа обязательно");
 
-            await _context.SaveChangesAsync();
-            return Ok();
+                string normalized = typeName.Trim().ToLower();
+                bool exists = await _context.TaskTypes
+                    .AnyAsync(t => t.TypeName.Trim().ToLower() == normalized);
+
+                if (exists)
+                    return Conflict("Тип задачи уже существует");
+
+                _context.TaskTypes.Add(new TaskType
+                {
+                    TypeName = typeName.Trim(),
+                    IsAccessible = true
+                });
+
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "internal server error");
+            }
         }
 
         // PUT api/tasktype/{id}
@@ -64,6 +71,7 @@ namespace ServerForToDoList.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] string newTypeName)
         {
+            try { 
             if (string.IsNullOrWhiteSpace(newTypeName))
                 return BadRequest("Название типа обязательно");
 
@@ -81,6 +89,11 @@ namespace ServerForToDoList.Controllers
             type.TypeName = newTypeName.Trim();
             await _context.SaveChangesAsync();
             return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "internal server error");
+            }
         }
 
         // PATCH api/tasktype/{id}
@@ -88,6 +101,7 @@ namespace ServerForToDoList.Controllers
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateAccessibility(int id, [FromBody] bool isAccessible)
         {
+            try { 
             var type = await _context.TaskTypes.FindAsync(id);
             if (type == null)
                 return NotFound();
@@ -95,6 +109,11 @@ namespace ServerForToDoList.Controllers
             type.IsAccessible = isAccessible;
             await _context.SaveChangesAsync();
             return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "internal server error");
+            }
         }
     }
 

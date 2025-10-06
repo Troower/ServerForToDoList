@@ -61,7 +61,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { Message = "Произошла внутренняя ошибка сервера" });
+            return StatusCode(500, new { Message = "internal server error" });
         }
     }
 
@@ -78,7 +78,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { Message = "Произошла внутренняя ошибка сервера" });
+            return StatusCode(500, new { Message = "internal server error" });
         }
     }
 
@@ -95,7 +95,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { Message = "Произошла внутренняя ошибка сервера" });
+            return StatusCode(500, new { Message = "internal server error" });
         }
     }
 
@@ -108,7 +108,7 @@ public class UserController : ControllerBase
         {
             if (await _context.Users.AnyAsync(u => u.Login == user.login))
             {
-                return Conflict(new { Message = "Пользователь с таким логином уже существует" });
+                return Conflict(new { Message = "User with this login already exists" });
             }
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var newUser = new User
@@ -125,8 +125,6 @@ public class UserController : ControllerBase
             };
 
             await UserRepository.AddUserAsync(_context, newUser);
-
-            // Возвращаем 201 Created с URL в заголовке Location
             var answer = new
             {
                 surname = newUser.Surname,
@@ -139,7 +137,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { Message = "Произошла внутренняя ошибка сервера" });
+            return StatusCode(500, new { Message = "internal server error" });
         }
     }
 
@@ -179,7 +177,7 @@ public class UserController : ControllerBase
         }
         catch (Exception)
         {
-            return StatusCode(500, new { Message = "Произошла внутренняя ошибка сервера" });
+            return StatusCode(500, new { Message = "internal server error" });
         }
 
     }
@@ -219,11 +217,11 @@ public class UserController : ControllerBase
                 }
             }
 
-            return BadRequest(new { Message = "Ошибка при получении данных" });
+            return BadRequest(new { Message = "Error receiving data" });
         }
         catch (Exception)
         {
-            return StatusCode(500, new { Message = "Произошла внутренняя ошибка сервера" });
+            return StatusCode(500, new { Message = "internal server error" });
         }
     }
 }
